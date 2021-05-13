@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpCode,
   Res,
+  ConflictException,
   // ParseIntPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -46,8 +47,10 @@ export class ProductsController {
   }
 
   @Post()
-  create(@Body() payload: CreateProductDto) {
-    return this.productsService.create(payload);
+  async create(@Body() payload: CreateProductDto) {
+    return await this.productsService.create(payload).catch((error) => {
+      throw new ConflictException(error.message)
+    });
   }
 
   @Put(':id')
