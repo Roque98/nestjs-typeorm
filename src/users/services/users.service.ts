@@ -54,12 +54,12 @@ export class UsersService {
     return this.userRepo.delete(id);
   }
 
-  async getOrderByUser(id: number): Promise<Order> {
-    const user = await this.userRepo.findOne(id);
-    return {
-      date: new Date(),
-      user,
-      products: await this.productsService.findAll(),
-    };
-  }
+  // async getOrderByUser(id: number): Promise<Order> {
+  //   const user = await this.userRepo.findOne(id);
+  //   return {
+  //     date: new Date(),
+  //     user,
+  //     products: await this.productsService.findAll(),
+  //   };
+  // }
 }

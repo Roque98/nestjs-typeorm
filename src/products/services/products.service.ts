@@ -4,10 +4,10 @@ import {
 } from '@nestjs/common';
 
 import { Product } from './../entities/product.entity';
-import { CreateProductDto, UpdateProductDto } from './../dtos/products.dtos';
+import { CreateProductDto, FilterProductDto, UpdateProductDto } from './../dtos/products.dtos';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, FindConditions, FindManyOptions, Repository } from 'typeorm';
 import { Brand } from '../entities/brand.entity';
 import { Category } from '../entities/category.entity';
 
@@ -19,11 +19,27 @@ export class ProductsService {
     @InjectRepository(Category) private categoryRepo: Repository<Category>
   ) {}
 
-  async findAll() {
-    const products = await this.productRepo.find({
-      relations: ['brand']
+  async findAll(params?: FilterProductDto) {
+    if (params) {
+      const where: FindConditions<Product> = {};
+      const { limit, offset } = params;
+      const { maxPrice, minPrice } = params;
+      
+      if (minPrice && maxPrice) {
+        where.price = Between(minPrice, maxPrice);
+      }
+
+      return this.productRepo.find({
+        relations: ['brand'],
+        where,
+        take: limit,
+        skip: offset,
+      });
+    }
+
+    return this.productRepo.find({
+      relations: ['brand'],
     });
-    return products;
   }
 
   async findOne(id: number) {
